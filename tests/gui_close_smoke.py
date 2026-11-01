@@ -160,24 +160,24 @@ try:
                 capture(display_name,'recorder')
                 if os.environ.get('CAPRA_CAPTURE_DIR'):
                     inset=54 if compositor is not None else 0
-                    nav_x=115 if compositor is not None else 95
-                    click(display,window,nav_x,174+inset);capture(display_name,'recovery')
+                    nav_x=130 if compositor is not None else 110
+                    click(display,window,nav_x,210+inset);capture(display_name,'recovery')
                     if keep:
-                        click(display,window,nav_x,227+inset);capture(display_name,'settings')
-                    click(display,window,nav_x,124+inset)
+                        click(display,window,nav_x,264+inset);capture(display_name,'settings')
+                    click(display,window,nav_x,157+inset)
                 if os.environ.get('CAPRA_NAVIGATION_TEST') and not keep:
                     inset=54 if compositor is not None else 0
-                    click(display,window,115 if compositor is not None else 95,227+inset)
+                    click(display,window,130 if compositor is not None else 110,264+inset)
                     capture(display_name,'settings')
                     # Exercise the actual Component switch and persisted retention value.
                     _,_,width,_=geometry(display,window)
-                    switch_x=width-(85 if compositor is not None else 65)
-                    click(display,window,switch_x,221+inset)
+                    switch_x=width-(98 if compositor is not None else 78)
+                    click(display,window,switch_x,289+inset)
                     assert json.loads((config/'settings.json').read_text())['keep_mkv'] != keep
-                    click(display,window,switch_x,221+inset)
+                    click(display,window,switch_x,289+inset)
                     assert json.loads((config/'settings.json').read_text())['keep_mkv'] == keep
                     focused=False
-                    for input_y in range(390,491,10):
+                    for input_y in range(540,671,10):
                         click(display,window,450,input_y+inset)
                         press(display,'a',True);press(display,'BackSpace');time.sleep(.2)
                         if json.loads((config/'settings.json').read_text())['save_directory']=='':
@@ -187,12 +187,12 @@ try:
                     for char in str(videos):press(display,char)
                     time.sleep(.3)
                     assert json.loads((config/'settings.json').read_text())['save_directory']==str(videos), json.loads((config/'settings.json').read_text())['save_directory']
-                    click(display,window,115 if compositor is not None else 95,124+inset)
+                    click(display,window,130 if compositor is not None else 110,157+inset)
                 def record_control():
                     if os.environ.get('CAPRA_MOUSE_RECORD_TEST'):
                         _,_,width,_=geometry(display,window)
                         inset=54 if compositor is not None else 0
-                        click(display,window,width-(116 if compositor is not None else 96),198+inset)
+                        click(display,window,width-(127 if compositor is not None else 107),242+inset)
                     else:
                         key(display,window)
                 record_control()

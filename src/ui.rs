@@ -11,7 +11,7 @@ use gpui_kit::{
         progress::Progress,
         slider::{Slider, SliderEvent, SliderState, SliderValue},
         switch::Switch,
-        Disableable, Icon, IconName, Selectable, Sizable, TitleBar,
+        Disableable, Icon, IconName, Selectable, TitleBar,
     },
     *,
 };
@@ -276,7 +276,7 @@ impl RecorderView {
         div()
             .flex()
             .flex_col()
-            .w(px(206.))
+            .w(px(248.))
             .flex_shrink_0()
             .h_full()
             .p_5()
@@ -299,10 +299,10 @@ impl RecorderView {
                             .child(
                                 div()
                                     .font_weight(FontWeight::SEMIBOLD)
-                                    .text_size(px(17.))
+                                    .text_size(px(22.))
                                     .child("capra"),
                             )
-                            .child(muted("螢幕錄影工具").text_size(px(9.))),
+                            .child(muted("螢幕錄影工具").text_size(px(14.))),
                     ),
             )
             .child(nav)
@@ -321,20 +321,19 @@ impl RecorderView {
                             .gap_2()
                             .items_center()
                             .text_color(rgb(0x18856b))
-                            .text_size(px(12.))
+                            .text_size(px(16.))
                             .child(Icon::new(IconName::CircleCheck).size(px(15.)))
                             .child("安全儲存已啟用"),
                     )
                     .child(
                         muted("錄下畫面，也安心保留。\n中斷的錄影可於救援頁處理。")
-                            .text_size(px(10.)),
+                            .text_size(px(14.)),
                     ),
             )
     }
     fn recorder(&self, cx: &mut Context<Self>) -> Div {
         let phase = self.app.lifecycle.phase;
         let busy = self.app.busy();
-        let (label, color) = self.phase();
         let elapsed = self
             .app
             .start_time
@@ -370,7 +369,7 @@ impl RecorderView {
                             }))
                             .child(
                                 div()
-                                    .text_size(px(52.))
+                                    .text_size(px(64.))
                                     .font_weight(FontWeight::SEMIBOLD)
                                     .child(format!(
                                         "{:02}:{:02}:{:02}",
@@ -408,22 +407,6 @@ impl RecorderView {
                                 this.app.toggle_recording();
                                 cx.notify();
                             })),
-                    ),
-            )
-            .child(
-                div()
-                    .flex()
-                    .items_center()
-                    .justify_end()
-                    .min_h(px(46.))
-                    .child(
-                        div()
-                            .flex()
-                            .items_center()
-                            .gap_2()
-                            .text_color(rgb(color))
-                            .child(div().size(px(7.)).rounded_full().bg(rgb(color)))
-                            .child(label),
                     ),
             )
             .when(busy, |panel| {
@@ -596,7 +579,7 @@ impl RecorderView {
                         div()
                             .flex_1()
                             .min_w_0()
-                            .text_size(px(11.))
+                            .text_size(px(15.))
                             .text_color(rgb(MUTED))
                             .text_ellipsis()
                             .child(self.app.settings.save_directory.clone()),
@@ -604,7 +587,6 @@ impl RecorderView {
                     .child(
                         Button::new("open-record-folder")
                             .ghost()
-                            .small()
                             .icon(IconName::FolderOpen)
                             .label("開啟資料夾")
                             .on_click(cx.listener(|this, _, _, _| this.open_folder())),
@@ -708,7 +690,6 @@ impl RecorderView {
                     .child(
                         Button::new("reset-audio")
                             .ghost()
-                            .small()
                             .label("恢復建議值")
                             .disabled(busy)
                             .on_click(cx.listener(|this, _, window, cx| {
@@ -880,7 +861,6 @@ impl RecorderView {
                 .child(
                     Button::new("refresh-recovery")
                         .ghost()
-                        .small()
                         .icon(IconName::RefreshCw)
                         .label("重新掃描")
                         .disabled(busy)
@@ -985,7 +965,7 @@ impl Render for RecorderView {
             .flex()
             .bg(rgb(BACKGROUND))
             .text_color(rgb(INK))
-            .text_size(px(14.))
+            .text_size(px(18.))
             .font_family("Noto Sans CJK TC")
             .child(self.sidebar(cx))
             .child(
@@ -1011,7 +991,7 @@ impl Render for RecorderView {
                                     .gap_2()
                                     .child(
                                         div()
-                                            .text_size(px(25.))
+                                            .text_size(px(30.))
                                             .font_weight(FontWeight::BOLD)
                                             .child(title),
                                     )
@@ -1026,7 +1006,7 @@ impl Render for RecorderView {
                                     .py_2()
                                     .rounded_full()
                                     .bg(rgb(0xffffff))
-                                    .text_size(px(11.))
+                                    .text_size(px(15.))
                                     .text_color(rgb(color))
                                     .child(div().size(px(6.)).rounded_full().bg(rgb(color)))
                                     .child(phase),
@@ -1058,7 +1038,7 @@ impl Render for RecorderView {
                                 .gap_2()
                                 .child(
                                     div()
-                                        .text_size(px(11.))
+                                        .text_size(px(15.))
                                         .text_color(rgb(
                                             if self.app.lifecycle.phase == Phase::Failed {
                                                 0xc54950
@@ -1091,7 +1071,7 @@ impl Render for RecorderView {
                                 .px_8()
                                 .py_3()
                                 .bg(rgb(0xfff3d9))
-                                .text_size(px(11.))
+                                .text_size(px(15.))
                                 .child(error),
                         )
                     }),
@@ -1113,7 +1093,7 @@ impl Render for RecorderView {
                                     .flex()
                                     .items_center()
                                     .gap_2()
-                                    .text_size(px(12.))
+                                    .text_size(px(16.))
                                     .text_color(rgb(MUTED))
                                     .child(
                                         img(app_logo())
@@ -1142,7 +1122,7 @@ fn card() -> Div {
 }
 fn muted(text: impl Into<SharedString>) -> Div {
     div()
-        .text_size(px(12.))
+        .text_size(px(16.))
         .text_color(rgb(MUTED))
         .child(text.into())
 }
@@ -1154,7 +1134,7 @@ fn section(title: impl Into<SharedString>, description: impl Into<SharedString>)
         .child(
             div()
                 .font_weight(FontWeight::SEMIBOLD)
-                .text_size(px(15.))
+                .text_size(px(20.))
                 .child(title.into()),
         )
         .child(muted(description))

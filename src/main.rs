@@ -42,7 +42,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             Theme::change(ThemeMode::Light, None, cx);
             Theme::update(cx, |theme| {
                 theme.font_family = "Noto Sans CJK TC".into();
-                theme.font_size = px(14.);
+                theme.font_size = px(18.);
                 theme.colors.primary = rgb(0x087f8c).into();
                 theme.colors.primary_hover = rgb(0x096c77).into();
                 theme.colors.primary_active = rgb(0x075c65).into();
@@ -59,7 +59,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 }
             })
             .detach();
-            let bounds = Bounds::centered(None, size(px(1020.), px(760.)), cx);
+            let bounds = Bounds::centered(None, size(px(1200.), px(880.)), cx);
             gpui_kit::open_window(
                 WindowOptions {
                     window_bounds: Some(WindowBounds::Windowed(bounds)),
@@ -68,7 +68,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         appears_transparent: false,
                         ..Default::default()
                     }),
-                    window_min_size: Some(size(px(820.), px(620.))),
+                    window_min_size: Some(size(px(1020.), px(760.))),
                     app_id: Some("capra".into()),
                     window_decorations: Some(WindowDecorations::Client),
                     app_owns_titlebar_drag: true,

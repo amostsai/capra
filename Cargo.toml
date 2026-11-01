@@ -1,0 +1,42 @@
+[package]
+name = "capra"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.95"
+
+[dependencies]
+# GUI 框架
+gpui-kit = { version = "=0.8.1", optional = true }
+
+# GStreamer 多媒體處理
+gstreamer = "0.22"
+
+# Wayland Desktop Portal (請求螢幕錄製權限)
+ashpd = { version = "0.8", features = ["async-std"] }
+async-std = { version = "1.12", features = ["attributes"] }
+
+# 工具庫
+chrono = "0.4"
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+fs2 = "0.4"
+rfd = "0.14"
+
+[features]
+default = ["gpui-ui"]
+gpui-ui = ["dep:gpui-kit"]
+
+[[bin]]
+name = "capra"
+path = "src/main.rs"
+required-features = ["gpui-ui"]
+
+[profile.dev]
+debug = 0
+
+[profile.test]
+debug = 0
+
+[profile.release]
+strip = "symbols"

@@ -2,6 +2,10 @@
 
 Ubuntu/Linux 的 Rust 桌面錄影工具，使用 **GPUI Component / GPUI Kit 0.8.1** 介面。支援 Wayland（Desktop Portal / PipeWire）及 X11、系統聲音與麥克風混音。
 
+<img src="assets/capra-logo.png" alt="capra logo" width="200">
+
+圖示原稿保留於 `assets/capra-logo.png`；`assets/icons/` 包含 Ubuntu hicolor 所需的各尺寸 PNG，會隨安裝包一起安裝。介面圖示內嵌於執行檔，可單獨搬移執行檔。
+
 介面分為「錄影、錄影救援、設定」三個頁面，以左側導覽切換。主頁提供錄影計時、音訊開關與畫質選項，設定頁會自動記住調整。
 
 ![錄影主頁](docs/ui/recorder.png)
@@ -10,9 +14,9 @@ Ubuntu/Linux 的 Rust 桌面錄影工具，使用 **GPUI Component / GPUI Kit 0.
 
 ## 錄影與安全儲存
 
-1. 按「開始錄影」，Wayland 使用者依系統視窗選擇畫面。
+1. 點主頁右側紅色圓圈開始錄影，Wayland 使用者依系統視窗選擇畫面。
 2. 錄影先寫入 MKV，停止後完成收尾，再無損轉封裝成 MP4。
-3. 按停止後會顯示儲存／轉換狀態；此時不能開始另一段錄影。
+3. 錄影中右側按鈕改為紅色方塊，點擊後停止並顯示儲存／轉換狀態；處理期間按鈕停用，不能開始另一段錄影。F9 也可開始／停止。
 4. 關閉視窗會先停止、完成寫檔與轉換，再退出。轉換失敗時視窗保留錯誤訊息，MKV 也會留下。
 
 設定頁的「保留 MKV 原檔」預設開啟。取消勾選後，只有在 MP4 成功產生、確認包含有效影音資料並完成檔案同步後，才會刪除 MKV。轉換失敗時一律保留來源。自動播放與開啟資料夾維持獨立選項。
@@ -31,6 +35,24 @@ Ubuntu/Linux 的 Rust 桌面錄影工具，使用 **GPUI Component / GPUI Kit 0.
 - 保留 MKV 時需要同時存放 MKV 與 MP4，約需兩份影音資料的空間。
 
 ## 相依環境與執行
+
+### Ubuntu 發行檔
+
+本機產出的檔案位於 `dist/`：
+
+- `capra`：可直接啟動的 Ubuntu 26.04 x86_64 執行檔，執行 `./dist/capra`。
+- `capra_0.1.0_ubuntu26.04_amd64.deb`：Ubuntu 26.04 x86_64 安裝套件。
+- `capra-0.1.0-ubuntu26.04-x86_64.tar.gz`：執行檔及執行說明。
+- `SHA256SUMS`：檔案校驗碼。
+
+安裝方式：`sudo apt install ./dist/capra_0.1.0_ubuntu26.04_amd64.deb`。
+此版本在 Ubuntu 26.04 建置，不能視為 Ubuntu 22.04／24.04 相容版本；舊版需要另外使用對應的建置環境。
+
+重新打包：先完成 release 建置，再執行 `python3 tools/package-ubuntu.py target/release/capra`。打包工具依主機套件資料庫產生原生函式庫版本需求，不包含個人設定或錄影。
+
+直接執行的版本仍需要系統已安裝上述 GStreamer、FFmpeg 等執行相依套件；本機已具備。此專案目前僅提供 Ubuntu 版本。
+
+### 從原始碼建置
 
 需要 **Rust 1.95.0 或更新版本**、可用的 Vulkan 圖形驅動、GStreamer 開發套件及對應的影像來源／H.264／AAC／Matroska 插件、FFmpeg（含 ffprobe）、PulseAudio 或 PipeWire 的 PulseAudio 相容層及 `pactl`。Wayland 另需可用的 xdg-desktop-portal 與桌面後端；檔案選擇器使用系統 Portal。中文字型使用系統的 Noto CJK 等字型。Linux 客戶端裝飾的標題列會透過安全關閉流程等待錄影完成。
 

@@ -6,7 +6,7 @@ use capra::{
 use gpui_kit::prelude::FluentBuilder;
 use gpui_kit::{
     component::{
-        button::{Button, ButtonVariants},
+        button::{Button, ButtonCustomVariant, ButtonVariants},
         input::{Input, InputEvent, InputState},
         progress::Progress,
         slider::{Slider, SliderEvent, SliderState, SliderValue},
@@ -16,6 +16,17 @@ use gpui_kit::{
     *,
 };
 use std::{path::PathBuf, process::Command, time::Duration};
+
+fn app_logo() -> std::sync::Arc<Image> {
+    static LOGO: std::sync::OnceLock<std::sync::Arc<Image>> = std::sync::OnceLock::new();
+    LOGO.get_or_init(|| {
+        std::sync::Arc::new(Image::from_bytes(
+            ImageFormat::Png,
+            capra::APP_ICON_PNG.to_vec(),
+        ))
+    })
+    .clone()
+}
 
 gpui_kit::actions!(recorder, [ToggleRecording, CloseRecorder]);
 const INK: u32 = 0x172b36;
@@ -279,17 +290,7 @@ impl RecorderView {
                     .gap_3()
                     .pt_3()
                     .pb_8()
-                    .child(
-                        div()
-                            .size(px(38.))
-                            .rounded(px(12.))
-                            .bg(rgb(ACCENT))
-                            .flex()
-                            .items_center()
-                            .justify_center()
-                            .text_color(rgb(0xffffff))
-                            .child(Icon::new(IconName::Frame).size(px(21.))),
-                    )
+                    .child(img(app_logo()).size(px(48.)).object_fit(ObjectFit::Contain))
                     .child(
                         div()
                             .flex()
@@ -380,49 +381,41 @@ impl RecorderView {
                             ),
                     )
                     .child(
-                        div()
+                        Button::new("record-toggle")
+                            .custom(
+                                ButtonCustomVariant::new(cx)
+                                    .color(rgb(0xfff0f1).into())
+                                    .hover(rgb(0xffe0e4).into())
+                                    .active(rgb(0xffcdd4).into()),
+                            )
                             .size(px(84.))
                             .flex_shrink_0()
                             .rounded_full()
-                            .bg(rgb(0xfff0f1))
-                            .flex()
-                            .items_center()
-                            .justify_center()
+                            .border_0()
+                            .p_0()
+                            .accessibility_label(button_label)
+                            .tooltip(button_label)
+                            .disabled(busy && !can_stop)
+                            .when(busy && !can_stop, |button| button.opacity(0.45))
                             .child(
                                 div()
                                     .size(px(34.))
-                                    .rounded(if phase == Phase::Recording {
-                                        px(8.)
-                                    } else {
-                                        px(17.)
-                                    })
+                                    .flex_shrink_0()
+                                    .rounded(if can_stop { px(4.) } else { px(17.) })
                                     .bg(rgb(0xe45461)),
-                            ),
+                            )
+                            .on_click(cx.listener(|this, _, _, cx| {
+                                this.app.toggle_recording();
+                                cx.notify();
+                            })),
                     ),
             )
             .child(
                 div()
                     .flex()
                     .items_center()
-                    .justify_between()
-                    .child(
-                        Button::new("record-toggle")
-                            .danger()
-                            .large()
-                            .h(px(46.))
-                            .px_6()
-                            .icon(if can_stop {
-                                IconName::Square
-                            } else {
-                                IconName::Play
-                            })
-                            .label(button_label)
-                            .disabled(busy && !can_stop)
-                            .on_click(cx.listener(|this, _, _, cx| {
-                                this.app.toggle_recording();
-                                cx.notify();
-                            })),
-                    )
+                    .justify_end()
+                    .min_h(px(46.))
                     .child(
                         div()
                             .flex()
@@ -1119,8 +1112,14 @@ impl Render for RecorderView {
                                     .h_full()
                                     .flex()
                                     .items_center()
+                                    .gap_2()
                                     .text_size(px(12.))
                                     .text_color(rgb(MUTED))
+                                    .child(
+                                        img(app_logo())
+                                            .size(px(22.))
+                                            .object_fit(ObjectFit::Contain),
+                                    )
                                     .child("capra"),
                             )
                             .on_close_window(cx.listener(|this, _, window, cx| {

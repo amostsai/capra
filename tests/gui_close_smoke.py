@@ -188,14 +188,31 @@ try:
                     time.sleep(.3)
                     assert json.loads((config/'settings.json').read_text())['save_directory']==str(videos), json.loads((config/'settings.json').read_text())['save_directory']
                     click(display,window,115 if compositor is not None else 95,124+inset)
-                key(display,window)
+                def record_control():
+                    if os.environ.get('CAPRA_MOUSE_RECORD_TEST'):
+                        _,_,width,_=geometry(display,window)
+                        inset=54 if compositor is not None else 0
+                        click(display,window,width-(116 if compositor is not None else 96),198+inset)
+                    else:
+                        key(display,window)
+                record_control()
                 deadline = time.monotonic()+10
                 while time.monotonic()<deadline:
                     if any(p.stat().st_size>10000 for p in videos.glob('*.mkv')): break
                     time.sleep(.1)
                 else: raise RuntimeError('No recording data was written')
                 time.sleep(.6)
-                if stop_first: key(display,window)
+                if os.environ.get('CAPRA_MOUSE_RECORD_TEST'):
+                    capture(display_name,'recording')
+                if stop_first: record_control()
+                if stop_first and os.environ.get('CAPRA_MOUSE_RECORD_TEST'):
+                    # Prove the square stops and saves before any window-close event.
+                    deadline=time.monotonic()+12
+                    while not list(videos.glob('*.mp4')):
+                        assert app.poll() is None, 'Window closed when stop was clicked'
+                        if time.monotonic()>deadline:
+                            raise RuntimeError('Clicking the square did not finish the recording')
+                        time.sleep(.1)
                 if os.environ.get('CAPRA_COMPOSITOR'):
                     _,_,width,_=geometry(display,window)
                     click(display,window,width-37,37)

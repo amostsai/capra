@@ -324,6 +324,19 @@ impl RecorderApp {
 
         let _ = std::fs::create_dir_all(&desktop_dir);
         let desktop_file_path = format!("{desktop_dir}/capra.desktop");
+        let icon_dir = std::path::Path::new(&desktop_dir).join("../icons/hicolor/512x512/apps");
+        if let Err(e) = std::fs::create_dir_all(&icon_dir)
+            .and_then(|_| std::fs::write(icon_dir.join("capra.png"), crate::APP_ICON_PNG))
+        {
+            self.status_msg = format!("安裝圖示失敗: {e}");
+            return;
+        }
+        let exe_path = exe_path
+            .replace('\\', "\\\\")
+            .replace('"', "\\\"")
+            .replace('`', "\\`")
+            .replace('$', "\\$")
+            .replace('%', "%%");
 
         let desktop_content = format!(
             "[Desktop Entry]\n\
@@ -331,11 +344,12 @@ impl RecorderApp {
              Name=capra\n\
              Name[zh_TW]=capra\n\
              Comment=Ubuntu 螢幕畫面與聲音錄影軟體\n\
-             Exec={exe_path}\n\
-             Icon=media-record\n\
+             Exec=\"{exe_path}\"\n\
+             Icon=capra\n\
              Terminal=false\n\
              Categories=AudioVideo;Recorder;Utility;\n\
-             StartupNotify=true\n"
+             StartupNotify=true\n\
+             StartupWMClass=capra\n"
         );
 
         match std::fs::write(&desktop_file_path, desktop_content) {
